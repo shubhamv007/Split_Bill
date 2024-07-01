@@ -1,3 +1,5 @@
+from fpdf import FPDF
+
 class Bill:
     """
     Object that contains data about a bill, such as total amount and period of the bill.
@@ -32,4 +34,21 @@ class PdfReport:
         self.filename = filenames
 
     def generate(self, flatmate_1, flatemate_2, bill):
-        pass
+        pdf = FPDF( orientation = "P", unit = "pt", format = 'A4')
+        pdf.add_page()
+
+        # Insert title
+        pdf.set_font(family = "Times", size = 24, style = 'B')
+        pdf.cell(w = 0, h=80, txt = "Flatmate Bill", border = 1, align= 'C', ln=1)
+
+        # Insert Period label and value
+        pdf.cell(w = 100, h=40, txt = "Period", border = 1)
+        pdf.cell(w = 130, h=40, txt = bill.period, border = 1)
+        
+        # Insert name and due amount of the first flatmate
+        pdf.cell(w = 100, h=40, txt = flatmate_1.name, border = 1)
+        pdf.cell(w = 130, h=40, txt = str(flatmate_1.pays(bill, flatemate_2)), border = 1)
+
+        # Inserted Author
+        pdf.set_author('SHUBHAM VAISHNAV')
+        pdf.output(self.filename)
