@@ -1,67 +1,39 @@
-from fpdf import FPDF
+from bill import Bill
+from flatmate import flatmate
+from pdf_report import PdfReport
 
-class Bill:
-    """
-    Object that contains data about a bill, such as total amount and period of the bill.
-    """
+def get_float(prompt):
+    while True:
+        try:
+            return float(input(prompt))
+        except ValueError:
+            print("Please enter a valid number.")
 
-    def __init__(self, amount, period):
-        self.amount = amount
-        self.period = period
+def get_int(prompt):
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            print("Please enter a valid integer.")
+def main():
+    amount = float(input("Hey user, Enter the bill amount: "))
+    period = input("What is the bill period? E.g. December 2020: ")
 
+    name_1 = input("What is your name? ")
+    days_in_house_1 = int(input(f"How many days did {name_1} stay in the house during the bill period? "))
 
-class flatmate:
-    """
-    Creates a flatmate person who lives in the flat and pays a share of the bill.
-    """
+    name_2 = input("What is the name of other flatmate? ")
+    days_in_house_2 = int(input(f"How many days did {name_2} stay in the house during the bill period? "))
 
-    def __init__(self, name, days_in_house):
-        self.name = name 
-        self.days_in_house = days_in_house
+    the_bill = Bill(amount, period)
+    flatmate1 = flatmate(name_1, days_in_house_1)
+    flatmate2 = flatmate(name_2, days_in_house_2)
 
-    def pays(self, bill, flatmate_2):
-        weight = self.days_in_house / (self.days_in_house + flatmate_2.days_in_house)
-        to_pay = bill.amount * weight
-        return to_pay
+    print(f"{flatmate1.name} pays: ", flatmate1.pays(the_bill, flatmate2))
+    print(f"{flatmate2.name} pays: ", flatmate2.pays(the_bill, flatmate1))
 
+    pdf_report = PdfReport(filenames=f"{the_bill.period}.pdf")
+    pdf_report.generate(flatmate1, flatmate2, the_bill)
 
-class PdfReport:
-    """
-    Creates a pdf file that contains data about the flatmates such as their names, their due amount and the period of the bill.
-    """
-
-    def __init__(self, filenames):
-        self.filename = filenames
-
-    def generate(self, flatmate_1, flatmate_2, bill):
-
-        flatmate_1_pay = str(round(flatmate_1.pays(bill, flatmate_2),2))
-        flatmate_2_pay = str(round(flatmate_2.pays(bill, flatmate_1),2))
-
-        pdf = FPDF( orientation = "P", unit = "pt", format = 'A4')
-        pdf.add_page()
-
-        # Add Icon
-        pdf.image("house.png", w=50, h=50)
-
-        # Insert title
-        pdf.set_font(family = "Times", size = 24, style = 'B')
-        pdf.cell(w = 0, h=80, txt = "Flatmate Bill", border = 0, align= 'C', ln=1)
-
-        # Insert Period label and value
-        pdf.set_font(family = "Times", size = "15", style = 'B')
-        pdf.cell(w = 100, h=40, txt = "Period", border = 0)
-        pdf.cell(w = 130, h=40, txt = bill.period, border = 0)
-        
-        # Insert name and due amount of the first flatmate
-        pdf.set_font(family = "Times", size = "12")
-        pdf.cell(w = 100, h=25, txt = flatmate_1.name, border = 0)
-        pdf.cell(w = 130, h=25, txt = flatmate_1_pay, border = 0)
-
-        # Insert name and due amount of the second flatmate
-        pdf.cell(w = 100, h=25, txt = flatmate_2.name, border = 0)
-        pdf.cell(w = 130, h=25, txt = flatmate_2_pay, border = 0)
-
-        # Inserted Author
-        pdf.set_author('SHUBHAM VAISHNAV')
-        pdf.output(self.filename)
+if __name__ == "__main__":
+    main()
