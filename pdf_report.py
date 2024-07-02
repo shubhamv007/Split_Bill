@@ -19,7 +19,7 @@ class PdfReport:
         pdf.add_page()
 
         # Add Icon
-        pdf.image("resources/house.png", w=50, h=50)
+        pdf.image(os.path.join('resources', 'house.png'), w=50, h=50)
 
         # Insert title
         pdf.set_font(family = "Times", size = 24, style = 'B')
@@ -41,7 +41,7 @@ class PdfReport:
 
         # Inserted Author
         pdf.set_author('SHUBHAM VAISHNAV')
-        os.chdir("resources")
-        pdf.output(self.filename)
+        output_path = os.path.join('resources', 'output', self.filename)
+        pdf.output(output_path)
 
-        webbrowser.open(self.filename)
+        webbrowser.open(output_path)
